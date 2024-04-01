@@ -1,0 +1,130 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+from tkinter.filedialog import asksaveasfilename, askopenfilename
+import subprocess
+import os
+
+# przyciski (funkcje)
+file_path = ''
+
+def motyw_light():
+    color = "#fcfcfc"
+    colortla = "#c2c2c2"
+    code_input.config(bg=color)
+    code_output.config(bg=colortla, fg='green')
+    run_przycisk.config(bg=colortla)
+    save_przycisk.config(bg=colortla)
+    open_przycisk.config(bg=colortla)
+    panda_przycisk.config(bg=colortla)
+    infolinia.config(bg=colortla, fg='#3d3d3d')
+    Napisinfo.config(bg=colortla, fg='#249e24')
+    root.config(bg=colortla)
+def motyw_dark():
+    color = "#d6d6d6"
+    colortla = "#323846"
+    root.config(bg=colortla)
+    code_input.config(bg=color)
+    code_output.config(bg=colortla, fg='lightgreen')
+    run_przycisk.config(bg=colortla)
+    save_przycisk.config(bg=colortla)
+    open_przycisk.config(bg=colortla)
+    panda_przycisk.config(bg=colortla)
+    infolinia.config(bg=colortla, fg='#08ccb5')
+    Napisinfo.config(bg=colortla, fg='light green')
+
+def set_file_path(path):
+    global file_path
+    file_path = path
+
+def open_file():
+    global file_path
+    path = askopenfilename(filetypes=[('Python Files', '*.py')])
+    if path:
+        with open(path, 'r') as file:
+            code = file.read()
+            code_input.delete('1.0', END)
+            code_input.insert('1.0', code)
+        file_path = path
+
+def save_file():
+    global file_path
+    if file_path == '':
+        path = asksaveasfilename(filetypes=[('Python Files', '*.py')])
+    else:
+        path = file_path
+    if path:
+        with open(path, 'w') as file:
+            code = code_input.get('1.0', END)
+            file.write(code)
+        set_file_path(path)
+
+def run_file():
+    if file_path=='' :
+        messagebox.showerror('Better Python','Musisz zapisać :>')
+        return
+    command= f'python {file_path}'
+    process= subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+    output, error = process.communicate()
+    code_output.insert('1.0',output)
+    code_output.insert('1.0',error)
+root = Tk()
+root.title("Better python idle :>                                                                                                                (version:1.0)")
+root.geometry("1280x720+150+80")
+root.resizable(False, False)
+root.configure(bg="#323846")
+#Menu
+glmenu=Menu(root)
+root.config(menu=glmenu)
+#Ustawienia
+ust_menu=Menu(glmenu)
+#Motyw
+podmenu=Menu(ust_menu)
+#Info
+infomenu=Menu(glmenu)
+
+glmenu.add_cascade(label="Ustawienia", menu=ust_menu)
+ust_menu.add_cascade(label="Motyw",menu=podmenu)
+#Ja
+infotworca=Menu(infomenu)
+glmenu.add_cascade(label="Info", menu=infomenu)
+infomenu.add_cascade(label="Twórca", menu=infotworca)
+infotworca.add_command(label="Alan :>")
+#Wybór motywu
+podmenu.add_command(label="ciemny", command=motyw_dark)
+podmenu.add_command(label="jansy", command=motyw_light)
+# ikona aplikacji
+imagine_icon = PhotoImage(file="logo.png")
+root.iconphoto(False, imagine_icon)
+
+# pole na pisanie kodu
+code_input = Text(root, bg='#d6d6d6' ,font="cosolas 18")
+code_input.place(x=180, y=0, width=680, height=720)
+#wyświetlanie tekstu (komend po uruchomieniu programu)
+code_output = Text(root, font="cosolas 15", bg="#323846", fg="lightgreen")
+code_output.place(x=860, y=0, width=420, height=720)
+
+#Informacja
+Napisinfo= tkinter.Label(root,text="INFO" ,width=5 ,height=5, bg="#323846" ,fg="lightgreen",font=('cosolas 25'))
+Napisinfo.place(x=40, y=300)
+infolinia = tkinter.Label(root, text="Niestety opcja 'input'\n jest niedostępna, " ,bg='#323846', fg="#08ccb5",font=('cosolas 14'))
+infolinia.place(x=0, y=420)
+
+
+# przyciski obraz
+open_button = PhotoImage(file="open.png")
+save_button = PhotoImage(file="save.png")
+run_button = PhotoImage(file="run.png")
+#Pandowąż
+panda = PhotoImage(file="pythonpanda.png")
+panda_przycisk = Button(root, image=panda, bg="#323846", bd=0)
+panda_przycisk.place(x=20, y=490)
+#przyciski funkcja
+open_przycisk = Button(root, image=open_button, bg="#323846", bd=0, command=open_file)
+open_przycisk.place(x=30, y=30)
+
+save_przycisk = Button(root, image=save_button, bg="#323846", bd=0, command=save_file)
+save_przycisk.place(x=30, y=145)
+
+run_przycisk = Button(root, image=run_button, bg="#323846", bd=0, command=run_file)
+run_przycisk.place(x=30, y=260)
